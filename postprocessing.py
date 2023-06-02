@@ -176,7 +176,8 @@ def plot_pressure(ax, fn, fac=1.0, t0=0.0):
                     vmin=1e2, vmax=2e8, cblabel=r'pressure [bar]')
     ax.set_title("t=%.2f Myr"%(get_time_from_snap(part) * unit_time_in_megayr - t0))
     ax.set_xlabel(r'$x$ [pc]')
-    ax.set_ylabel(r'$y$ [pc]')    
+    ax.set_ylabel(r'$y$ [pc]')
+    
     
 def plot_jet_tracer(ax, fn, fac=1.0, t0=0.0):
     """
@@ -201,7 +202,35 @@ def plot_jet_tracer(ax, fn, fac=1.0, t0=0.0):
     x[x<0] = 1e-50
     sn['jet'][:] = x 
     sn.plot_Aslice("jet", log=True, axes=ax, box=box, center=center,
-                   vmin=1e-40, vmax=1, cblabel=r'jet tracer')
+                   vmin=1e-4, vmax=1, cblabel=r'jet tracer')
+    ax.set_title("t=%.2f Myr"%(get_time_from_snap(part) * unit_time_in_megayr - t0))
+    ax.set_xlabel(r'$x$ [pc]')
+    ax.set_ylabel(r'$y$ [pc]')
+    
+    
+def plot_shocks(ax, fn, fac=1.0, t0=0.0):
+    """
+    Plot jet tracer distribution in a slice
+    Input: ax (matplotlib axis where you want to plot), 
+           fn (filename), 
+           fac (factor for a box size; default is 1), 
+           t0 (absolute time of the first snapshot to calculate relative time of the current snapshot)
+    Output: none
+    
+    """
+    sn = arepo.Simulation(fn)
+
+    box = np.array([fac*sn.header.BoxSize,fac*sn.header.BoxSize] )
+    center = np.array( [0.5 * sn.header.BoxSize, 0.5 * sn.header.BoxSize, 0.5 * sn.header.BoxSize] )
+    part = h5py.File(fn, 'r')
+    
+    sn.addField("shock",[1,0,0,0,0,0])
+    
+    x = part['PartType0/Machnumber'][:]
+    x[x<0] = 1e-50
+    sn['shock'][:] = x 
+    sn.plot_Aslice("shock", log=False, axes=ax, box=box, center=center,
+                   vmin=1, vmax=10, cblabel=r'shocks', cmap='Reds')
     ax.set_title("t=%.2f Myr"%(get_time_from_snap(part) * unit_time_in_megayr - t0))
     ax.set_xlabel(r'$x$ [pc]')
     ax.set_ylabel(r'$y$ [pc]')
