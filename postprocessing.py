@@ -171,9 +171,9 @@ def plot_pressure(ax, fn, fac=1.0, t0=0.0):
     
     T = part['PartType0/InternalEnergy'][:] / temp_to_u
     n0 = part['PartType0/Density'][:] * rho_to_numdensity 
-    sn['pressure'][:] = (T * n0)
+    sn['pressure'][:] = (T * n0 * BOLTZMANN)
     sn.plot_Aslice("pressure", log=True, axes=ax, box=box, center=center, 
-                    vmin=1e2, vmax=2e8, cblabel=r'pressure [bar]')
+                    vmin=1e-14, vmax=2e-8, cblabel=r'pressure [Ba]')
     ax.set_title("t=%.2f Myr"%(get_time_from_snap(part) * unit_time_in_megayr - t0))
     ax.set_xlabel(r'$x$ [pc]')
     ax.set_ylabel(r'$y$ [pc]')
@@ -272,5 +272,5 @@ def get_temp(file, gamma):
     """
     part = h5py.File(file, 'r')
     utherm = part['PartType0/InternalEnergy'][:]
-    temp_to_u = (BOLTZMANN / PROTONMASS) / mu / (gamma - 1) / unit_velocity / unit_velocity
+#     temp_to_u = (BOLTZMANN / PROTONMASS) / mu / (gamma - 1) / unit_velocity / unit_velocity
     return utherm / temp_to_u
